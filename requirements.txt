@@ -1,0 +1,2 @@
+configparser==3.7.1
+enum34==1.1.6

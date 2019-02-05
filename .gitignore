@@ -1,0 +1,6 @@
+.yfmosrc
+
+bin/
+include/
+lib/
+.Python
