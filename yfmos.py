@@ -312,7 +312,7 @@ Available commands:
 
     def __printFrame(self, frame):
         print("Group       A       B       C       D       F               G                    ")
-        print("Byte:       0H      0L      1H      1L      2       3       4       6       7    ")
+        print("Byte:       0H      0L      1H      1L      2       3       4       5       6    ")
         print("        +-------+-------+-------+-------+-------+-------+-------+-------+-------+")
         print("        !  0xA  + R-KEY ! C M D + C K S !  Rollingcode  ! Remote Handheld Addr. !")
         print("        !  0x%01X  +  0x%01X  !  0x%01X  +  0x%01X  !    0x%04X     !       0x%06X        !" % (
