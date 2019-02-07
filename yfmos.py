@@ -117,6 +117,7 @@ Available commands:
         # TODO use --device to override saved device id
         parser.add_argument('--device', '-d', help='Remote Handheld Addr.', type=self.__auto_int)
         parser.add_argument('--profile', '-p', default='main')
+        parser.add_argument('--rollingcode', '-r', type=int, default=-1)
         parser.add_argument(metavar='...', dest='b1string', help='B1 string', nargs=argparse.REMAINDER)
         args = parser.parse_args(sys.argv[2:])
         if len(args.b1string) == 0:
@@ -217,7 +218,10 @@ Available commands:
         config.read(self.CONFIG_FILE)
         if not config.has_section(args.profile):
             config.add_section(args.profile)
-        config.set(args.profile, "RollingCode", str(frame[2]<<8 | frame[3]))
+        rcode = args.rollingcode
+        if rcode < 0:
+            rcode = frame[2]<<8 | frame[3]
+        config.set(args.profile, "RollingCode", str(rcode))
         if args.device > 0:
                 config.set(args.profile, "Device", "0x%06X" % (args.device))
         else:
