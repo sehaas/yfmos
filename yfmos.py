@@ -174,15 +174,15 @@ Available commands:
                 state = state + 1
                 if state > States.ST_HW_SYNC4:
                     state = States.ST_UNKNOWN
-            elif pulse[int(listOfElem[i])] is "SWsync" and
-            state == States.ST_HW_SYNC4:
+            elif (pulse[int(listOfElem[i])] is "SWsync" and
+                    state == States.ST_HW_SYNC4):
                 state = States.ST_SW_SYNC2
-            elif pulse[int(listOfElem[i])] is "Long" and
-            state == States.ST_SW_SYNC2:
+            elif (pulse[int(listOfElem[i])] is "Long" and
+                    state == States.ST_SW_SYNC2):
                 state = States.ST_PAYLOAD
                 decode.init(1, True)
-            elif pulse[int(listOfElem[i])] is "Short" and
-            state == States.ST_SW_SYNC2:
+            elif (pulse[int(listOfElem[i])] is "Short" and
+                    state == States.ST_SW_SYNC2):
                 state = States.ST_PAYLOAD
                 decode.init(0, False)
             elif state == States.ST_PAYLOAD:
