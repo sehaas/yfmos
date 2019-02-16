@@ -12,8 +12,11 @@
 import sys
 import os
 import argparse
+import pycurl
+from functools import partial
 from ConfigParser import SafeConfigParser
 from enum import Enum, IntEnum
+from io import BytesIO
 
 
 class ManchesterDecode:
@@ -246,37 +249,66 @@ Available commands:
         parser.add_argument('--profile', '-p', default='main')
         args = parser.parse_args(sys.argv[2:])
 
+        self.__gen_B0(args.command, args.repeat, args.profile, self.__print_B0)
+
+    def run(self):
+        parser = argparse.ArgumentParser(
+            prog='%s run' % os.path.basename(sys.argv[0]),
+            description='Execute B0 data string')
+        parser.add_argument('command', type=Commands.from_string,
+                            choices=list(Commands))
+        parser.add_argument('--repeat', '-r', type=int, default=1)
+        parser.add_argument('--profile', '-p', default='main')
+        parser.add_argument('--host', '-H', required=True)
+        args = parser.parse_args(sys.argv[2:])
+
+        exec_B0 = partial(self.__exec_B0, args.host)
+        self.__gen_B0(args.command, args.repeat, args.profile, exec_B0)
+
+    def __gen_B0(self, command, repeat, profile, callback):
         # TODO: check for existing CONFIG_FILE
         config = SafeConfigParser()
         config.read(self.CONFIG_FILE)
-        buckets = map(int, config.get(args.profile, 'buckets').split(','))
-        device = int(config.get(args.profile, 'Device'), 0)
-        rollingCode = config.getint(args.profile, 'RollingCode') + 1
+        buckets = map(int, config.get(profile, 'buckets').split(','))
+        device = int(config.get(profile, 'Device'), 0)
+        rollingCode = config.getint(profile, 'RollingCode') + 1
+        longPulse = config.get(profile, 'Long')
+        shortPulse = config.get(profile, 'Short')
 
-        payload = self.__gen_payload(args.command, rollingCode, device)
+        payload = self.__gen_payload(command, rollingCode, device)
         payload = self.__calc_checksum(payload)
         self.__printFrame(payload)
         payload = self.__obfuscate(payload)
         bitvec = self.__to_bitvec(payload)
 
         encoder = ManchesterEncode()
-        encoder.init(config.get(args.profile, 'Long'), config.get(args.profile,
-                     'Short'))
+        encoder.init(longPulse, shortPulse)
         encoder.addData(bitvec)
         dataStr = encoder.get_encoded()
         # FIXME: generate HWSync/SWSync string
         tmpStr = "05 %02X %04X %04X %04X %04X %04X 0000000000000012%s34" % (
-            args.repeat, buckets[0], buckets[1], buckets[2], buckets[3],
-            buckets[4], dataStr)
+            repeat, buckets[0], buckets[1], buckets[2], buckets[3], buckets[4],
+            dataStr)
         strLen = int(len(tmpStr.replace(' ', '')) / 2)
-        print("RfRaw AA B0 %02X %s 55" % (strLen, tmpStr))
 
-        config.set(args.profile, 'RollingCode', str(rollingCode))
+        callback("RfRaw AA B0 %02X %s 55" % (strLen, tmpStr), config)
+
+        config.set(profile, 'RollingCode', str(rollingCode))
         with open(self.CONFIG_FILE, 'wb') as configfile:
             config.write(configfile)
 
-    def run(self):
-        print("TBD - post B0 directly to Tasmota device")
+    def __print_B0(self, b0, config):
+        print(b0)
+
+    def __exec_B0(self, host, b0, config):
+        b0encoded = b0.replace(" ", "%20")
+        buffer = BytesIO()
+        c = pycurl.Curl()
+        c.setopt(c.URL, "%s/ax?c1=%s" % (host, b0encoded))
+        c.setopt(c.WRITEDATA, buffer)
+        c.perform()
+        c.close()
+        body = buffer.getvalue()
 
     def __auto_int(self, x):
         return int(x, 0)
