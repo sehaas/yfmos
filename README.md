@@ -38,9 +38,8 @@ Broadcast the resulting B0 string with the Sonoff RF Bride - the shades should c
 * **Telis 16 RTS** did not produce a valid B1 string
 
 ## ToDo ##
-- Send B0 command direct to the Tasmota web interface
-- Generate HWSync / SWSync part
 - Validate inputs / config
+- Support B1 strings with [high/low bucket marking](https://github.com/Portisch/RF-Bridge-EFM8BB1/commit/651cce696a517290c13a01115bb2294f44677181)
 
 ## Contributing ##
 Please feel free to submit feedback, [bug reports](https://github.com/sehaas/yfmos/issues/new) or [pull requests](https://github.com/sehaas/yfmos/compare)
