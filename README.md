@@ -26,7 +26,7 @@ python yfmos.py init --device 0xaabbcc --rollingcode 0 --profile kitchen AA B1 0
 
 Generate a new pairing code.
 ```
-python yfmos.py gen --profile kitchen --repeat 8 PROG
+python yfmos.py gen --profile kitchen --repeat 8 --command PROG
 ```
 
 Put your receiver in programming mode (holding PROG on an already paired remote until the shades make a sharp movement).
