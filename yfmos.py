@@ -321,7 +321,7 @@ Available commands:
         config = SafeConfigParser()
         config.read(self.CONFIG_FILE)
         if not config.has_section(profile):
-            raise NameError('Profile '%s' not found' % profile)
+            raise NameError('Profile "%s" not found' % profile)
         buckets = map(int, config.get(profile, 'buckets').split(','))
         device = int(config.get(profile, 'Device'), 0)
         rollingCode = config.getint(profile, 'RollingCode') + 1
@@ -377,7 +377,7 @@ Available commands:
         c.perform()
         status = c.getinfo(pycurl.HTTP_CODE)
         if status != 200:
-            raise RuntimeError('Error calling '%s': %d' % (host, status))
+            raise RuntimeError('Error calling "%s": %d' % (host, status))
         c.close()
         body = buffer.getvalue()
 
