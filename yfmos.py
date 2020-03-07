@@ -156,7 +156,7 @@ Available commands:
 
         parsedConfig = None
         if len(args.b1string) > 0:
-            parsedConfig = self.__parge_B1(args.b1string)
+            parsedConfig = self.__parse_B1(args.b1string)
         else:
             # default values
             parsedConfig = YfmosConfig(rollingCode=0, device=0xC0FFEE,
@@ -223,7 +223,7 @@ Available commands:
             print(e, file=sys.stderr)
             exit(1)
 
-    def __parge_B1(self, b1String):
+    def __parse_B1(self, b1String):
         listOfElem = b1String
         iNbrOfBuckets = int(listOfElem[2])
         if self.debug:
